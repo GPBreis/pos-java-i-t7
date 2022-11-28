@@ -17,7 +17,7 @@ public class Teste {
 			System.out.println(
 					"\t1. Cadastrar Veículo de Passeio\n\t2. Cadastrar Veículo de Carga\n\t3. Imprimir Todos os Veículos de Passeio"
 							+ "\n\t4. Imprimir Todos os Veículos de Carga\n\t5. Imprimir Veículo de Passeio Pela Placa\n\t6. Imprimir Veículo de Carga Pela Placa"
-							+ "\n\t7. Excluir Veículo de Passeio pela Placa\n\t8. Excluir Veículo de Carga pela Placa\t9. Sair do Sistema\n");
+							+ "\n\t7. Excluir Veículo de Passeio pela Placa\n\t8. Excluir Veículo de Carga pela Placa\n\t9. Sair do Sistema\n");
 			try {
 				op = scan.entDados("OP: ");
 			} catch (InputMismatchException e) {
@@ -32,7 +32,12 @@ public class Teste {
 						System.out.println(
 								"Informe os dados cadastrais do veiculo de passeio " + (bdVeiculos.getListaPasseio().size() + 1));
 						bdVeiculos.getListaPasseio().add(cPasseio(pas));
-						continua = scan.entDados("Continuar o cadastro? (s/n)");
+						if (bdVeiculos.getListaPasseio().get(bdVeiculos.getListaPasseio().size()-1) != null) {
+							continua = scan.entDados("Continuar o cadastro? (s/n)");
+						} else {
+							bdVeiculos.getListaPasseio().remove(bdVeiculos.getListaPasseio().size()-1);
+							continua = "n";
+						}
 					}
 					break;
 				case "2":
@@ -42,23 +47,37 @@ public class Teste {
 							System.out.println(
 									"Informe os dados cadastrais do veiculo de carga " + (bdVeiculos.getListaCarga().size() + 1));
 							bdVeiculos.getListaCarga().add(cCarga(car));
-							continua = scan.entDados("Continuar o cadastro? (s/n)");
+							if(bdVeiculos.getListaCarga().get(bdVeiculos.getListaCarga().size()-1) != null){
+								continua = scan.entDados("Continuar o cadastro? (s/n)");
+							} else {
+								bdVeiculos.getListaCarga().remove(bdVeiculos.getListaCarga().size()-1);
+								continua = "n";
+							}
+
 					}
 					break;
 				case "3":
-					for (int i = 0; i < bdVeiculos.getListaPasseio().size(); i++) {
-						System.out.println();
-						System.out.println("Dados cadastrais do veiculo de passeio " + (i + 1));
-						vPasseio(bdVeiculos.getListaPasseio().get(i));
-						System.out.println();
+					if (bdVeiculos.getListaPasseio().size() > 0){
+						for (int i = 0; i < bdVeiculos.getListaPasseio().size(); i++) {
+							System.out.println();
+							System.out.println("Dados cadastrais do veiculo de passeio " + (i + 1));
+							vPasseio(bdVeiculos.getListaPasseio().get(i));
+							System.out.println();
+						}
+					} else {
+						System.out.println("Não existem veículos de passeio cadastrados.");
 					}
 					break;
 				case "4":
-					for (int i = 0; i < bdVeiculos.getListaCarga().size(); i++) {
-						System.out.println();
-						System.out.println("Dados cadastrais do veiculo de carga " + (i + 1));
-						vCarga(bdVeiculos.getListaCarga().get(i));
-						System.out.println();
+					if (bdVeiculos.getListaCarga().size() > 0){
+						for (int i = 0; i < bdVeiculos.getListaCarga().size(); i++) {
+							System.out.println();
+							System.out.println("Dados cadastrais do veiculo de carga " + (i + 1));
+							vCarga(bdVeiculos.getListaCarga().get(i));
+							System.out.println();
+						}
+					} else {
+						System.out.println("Não existem veículos de carga cadastrados.");
 					}
 					break;
 				case "5":
@@ -96,6 +115,7 @@ public class Teste {
 						if (bdVeiculos.getListaPasseio().get(i).getPlaca().equalsIgnoreCase(passeioPlaca)) {
 							temPlacaP = true;
 							bdVeiculos.getListaPasseio().remove(i);
+							System.out.println("Veículo de passeio excluído com sucesso.");
 						}
 					}
 					if (!temPlacaP) {
@@ -106,8 +126,11 @@ public class Teste {
 					temPlacaC = false;
 					cargaPlaca = scan.entDados("Informe a placa do veiculo de carga que será excluído:");
 					for (int i = 0; i < bdVeiculos.getListaCarga().size(); i++) {
-						temPlacaC = true;
-						bdVeiculos.getListaCarga().remove(i);
+						if (bdVeiculos.getListaCarga().get(i).getPlaca().equalsIgnoreCase(cargaPlaca)){
+							temPlacaC = true;
+							bdVeiculos.getListaCarga().remove(i);
+							System.out.println("Veículo de carga excluído com sucesso.");
+						}
 					}
 					if (!temPlacaC) {
 						System.out.println("Placa nao cadastrada, não é possível excluir um veículo não cadastrado.");
@@ -122,6 +145,7 @@ public class Teste {
 			}
 		}
 	}
+	
 
 	public static Passeio cPasseio(Passeio passeio) {
 		System.out.print("Informe a placa: ");
@@ -154,7 +178,7 @@ public class Teste {
 				return passeio;
 				}
 		} catch (VeicExistException e) {
-			return new Passeio();
+			return null;
 		}
 		
 	}
@@ -164,6 +188,7 @@ public class Teste {
 		System.out.println("Marca: " + passeio.getMarca());
 		System.out.println("Modelo: " + passeio.getModelo());
 		System.out.println("Cor: " + passeio.getCor());
+		System.out.println("Qtd. de rodas: " + passeio.getQtdRodas());
 		System.out.println("Qtd. de pistoes do motor: " + passeio.getMotor().getQtdPist());
 		System.out.println("Potencia do motor: " + passeio.getMotor().getPotencia());
 		System.out.println("Qtd. Passageiros: " + passeio.getQtdPassageiros());
@@ -205,7 +230,7 @@ public class Teste {
 			return carga;
 			}
 		} catch (VeicExistException e) {
-			return new Carga();
+			return null;
 		}
 		
 	}
@@ -215,6 +240,7 @@ public class Teste {
 		System.out.println("Marca: " + carga.getMarca());
 		System.out.println("Modelo: " + carga.getModelo());
 		System.out.println("Cor: " + carga.getCor());
+		System.out.println("Qtd. de rodas: " + carga.getQtdRodas());
 		System.out.println("Qtd. de pistoes do motor: " + carga.getMotor().getQtdPist());
 		System.out.println("Potencia do motor: " + carga.getMotor().getPotencia());
 		System.out.println("Qtd. Carga Max.: " + carga.getCargaMax());
